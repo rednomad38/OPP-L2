@@ -11,34 +11,34 @@
 using namespace std;
 using namespace chrono;
 
-struct House {
+struct house {
   string owner;
   year_month_day date;
   int cost;
 
-  House(const string& o, const year_month_day& d, int c)
+  house(const string& o, const year_month_day& d, int c)
      : owner(o), date(d), cost(c) {
   }
 };
 
 // Проверка корректности даты
-bool IsValidDate(const year_month_day& date) {
+bool isValidDate(const year_month_day& date) {
   return date.ok();
 }
 
 // Проверка корректности имени владельца
-bool IsValidOwner(const string& owner) {
+bool isValidOwner(const string& owner) {
   regex result("^[A-Za-zА-Яа-я ]+( [A-Za-zА-Яа-я]+)?( [A-Za-zА-Яа-я]+)?$");
   return regex_match(owner, result);
 }
 
 // Проверка корректности стоимости
-bool IsValidCost(int cost) {
+bool isValidCost(int cost) {
   return cost >= 0;
 }
 
 // Функция для форматирования даты в строку
-string FormatDate(const year_month_day& date) {
+string formatDate(const year_month_day& date) {
   ostringstream oss;
   oss << static_cast<unsigned>(date.day().operator unsigned()) << "."
     << static_cast<unsigned>(date.month().operator unsigned()) << "."
@@ -47,7 +47,7 @@ string FormatDate(const year_month_day& date) {
 }
 
 // Безопасное преобразование строки в int
-bool SafeStoi(const string& str, int& result) {
+bool safeStoi(const string& str, int& result) {
   try {
      result = stoi(str);
      return true;
@@ -62,8 +62,8 @@ bool SafeStoi(const string& str, int& result) {
 }
 
 // Сортировка по фамилии (первое слово)
-void SortByLastName(vector<House>& home) {
-  sort(home.begin(), home.end(), [](const House& a, const House& b) {
+void sortByLastName(vector<house>& home) {
+  sort(home.begin(), home.end(), [](const house& a, const house& b) {
     string lastNameA = a.owner.substr(0, a.owner.find(' '));
     string lastNameB = b.owner.substr(0, b.owner.find(' '));
 
@@ -75,8 +75,8 @@ void SortByLastName(vector<House>& home) {
 }
 
 // Сортировка по имени (второе слово)
-void SortByFirstName(vector<House>& home) {
-  sort(home.begin(), home.end(), [](const House& a, const House& b) {
+void sortByFirstName(vector<house>& home) {
+  sort(home.begin(), home.end(), [](const house& a, const house& b) {
     auto getFirstName = [](const string& owner) {
       istringstream iss(owner);
       vector<string> words((istream_iterator<string>(iss)), istream_iterator<string>());
@@ -94,24 +94,24 @@ void SortByFirstName(vector<House>& home) {
 }
 
 // Сортировка по дате
-void SortByDate(vector<House>& home) {
-  sort(home.begin(), home.end(), [](const House& a, const House& b) {
+void sortByDate(vector<house>& home) {
+  sort(home.begin(), home.end(), [](const house& a, const house& b) {
     return a.date < b.date;
     });
 }
 
 // Вывод списка домов
-void DisplayHouses(const vector<House>& home) {
-  for (const House& h : home) {
+void displayHouses(const vector<house>& home) {
+  for (const house& h : home) {
     cout << "Владелец: " << h.owner << endl;
-    cout << "Дата: " << FormatDate(h.date) << endl;
+    cout << "Дата: " << formatDate(h.date) << endl;
     cout << "Стоимость: " << h.cost << " руб." << endl;
     cout << endl;
   }
 }
 
 // Основное меню
-void MainMenu(vector<House>& home) {
+void mainMenu(vector<house>& home) {
   int choice;
   do {
     cout << "=== Меню ===" << endl;
@@ -126,22 +126,22 @@ void MainMenu(vector<House>& home) {
     switch (choice) {
       case 1:
         cout << "\n--- Список записей ---\n";
-        DisplayHouses(home);
+        displayHouses(home);
         break;
       case 2:
-        SortByLastName(home);
+        sortByLastName(home);
         cout << "\n--- Записи отсортированы по фамилии ---\n";
-        DisplayHouses(home);
+        displayHouses(home);
         break;
       case 3:
-        SortByFirstName(home);
+        sortByFirstName(home);
         cout << "\n--- Записи отсортированы по имени ---\n";
-        DisplayHouses(home);
+        displayHouses(home);
         break;
       case 4:
-        SortByDate(home);
+        sortByDate(home);
         cout << "\n--- Записи отсортированы по дате ---\n";
-        DisplayHouses(home);
+        displayHouses(home);
         break;
       case 5:
         cout << "Выход из программы.\n";
@@ -161,7 +161,7 @@ int main() {
      return 1;
   }
 
-  vector<House> home;
+  vector<house> home;
   string line;
 
   // Регулярное выражение для парсинга строк из файла
@@ -173,24 +173,24 @@ int main() {
       string owner = match[1];
       int dd, mm, yyyy, cost;
 
-    if (!SafeStoi(match[2], dd) || !SafeStoi(match[3], mm) || !SafeStoi(match[4], yyyy) || !SafeStoi(match[5], cost)) {
+    if (!safeStoi(match[2], dd) || !safeStoi(match[3], mm) || !safeStoi(match[4], yyyy) || !safeStoi(match[5], cost)) {
       cerr << "Ошибка: некорректные данные в строке: " << line << endl;
       continue;
       }
 
     year_month_day date = year{ yyyy } / month{ static_cast<unsigned>(mm) } / day{ static_cast<unsigned>(dd) };
 
-    if (!IsValidDate(date)) {
+    if (!isValidDate(date)) {
       cerr << "Ошибка: Неверная дата в строке: " << line << endl;
       continue;
     }
 
-    if (!IsValidOwner(owner)) {
+    if (!isValidOwner(owner)) {
       cerr << "Ошибка: Неверное имя владельца в строке: " << line << endl;
       continue;
     }
 
-    if (!IsValidCost(cost)) {
+    if (!isValidCost(cost)) {
       cerr << "Ошибка: Неверная стоимость в строке: " << line << endl;
       continue;
     }
@@ -202,7 +202,7 @@ int main() {
     }
   }
 
-  MainMenu(home);
+  mainMenu(home);
 
 return 0;
 }
